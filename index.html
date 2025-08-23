@@ -26,27 +26,27 @@
   
   <style type="text/tailwindcss">
     @layer utilities {
-      /* 轮播核心样式（优化循环滑动兼容性） */
+      /* 轮播核心样式（强化触摸滑动体验） */
       .carousel-container {
         @apply relative w-full overflow-hidden;
+        touch-action: pan-y; /* 优化移动端触摸：只允许垂直滚动，避免与水平滑动冲突 */
       }
       .carousel-track {
-        @apply flex transition-transform duration-500 ease-out; /* 保持平滑过渡 */
+        @apply flex transition-transform duration-500 ease-out; /* 保持平滑过渡，确保触摸切换不卡顿 */
       }
       .carousel-item {
-        @apply min-w-full relative; /* 确保每项占满容器宽度，为循环奠定基础 */
+        @apply min-w-full relative; /* 确保每项占满容器，为循环滑动奠定基础 */
       }
       .carousel-item img {
         @apply w-full h-full object-cover;
+        user-select: none; /* 禁止图片被选中，避免触摸滑动时出现选中框 */
+        -webkit-user-drag: none; /* 禁止图片拖拽，防止与轮播滑动冲突 */
       }
       .indicator {
         @apply w-8 h-2 rounded-full transition-all duration-300 bg-white/50 cursor-pointer;
       }
       .indicator.active {
         @apply bg-primary w-12;
-      }
-      .carousel-control {
-        @apply absolute top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 text-white hover:bg-primary transition-all duration-300 cursor-pointer;
       }
 
       /* 视频区域样式 */
@@ -58,16 +58,17 @@
         @apply absolute inset-0 w-full h-full object-contain;
       }
 
-      /* 交互提示样式 */
+      /* 交互提示样式（突出触摸滑动引导） */
       .swipe-hint {
-        @apply absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm flex items-center gap-2 z-10 animate-pulse md:hidden;
+        @apply absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/60 text-white px-5 py-2.5 rounded-full text-sm flex items-center gap-2 z-10 animate-pulse;
+        /* 保留提示（原逻辑3秒隐藏，现调整为更明显的引导） */
       }
     }
   </style>
 </head>
 <body class="font-inter bg-gray-100 min-h-screen flex items-center justify-center p-4">
   <div class="container mx-auto px-4 py-8 max-w-7xl">
-    <!-- 轮播容器（优化循环滑动逻辑） -->
+    <!-- 轮播容器（已移除左右控制按钮，强化触摸循环） -->
     <div class="carousel-container rounded-xl shadow-2xl mb-8" style="max-height: 80vh;">
       <!-- 轮播轨道 -->
       <div id="carouselTrack" class="carousel-track">
@@ -108,12 +109,14 @@
         </div>
       </div>
       
-      <!-- 滑动提示 -->
+      <!-- 滑动提示（强化触摸引导，保留在所有设备显示） -->
       <div class="swipe-hint">
-        <i class="fa fa-arrows-h"></i> 左右滑动切换
+        <i class="fa fa-hand-o-left"></i>
+        <span>触摸滑动切换</span>
+        <i class="fa fa-hand-o-right"></i>
       </div>
       
-      <!-- 指示器 -->
+      <!-- 指示器（保留点击切换功能） -->
       <div class="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-20">
         <div class="indicator active" data-index="0"></div>
         <div class="indicator" data-index="1"></div>
@@ -121,13 +124,7 @@
         <div class="indicator" data-index="3"></div>
       </div>
       
-      <!-- 左右控制按钮 
-      <button id="prevBtn" class="carousel-control left-4">
-        <i class="fa fa-chevron-left"></i>
-      </button>
-      <button id="nextBtn" class="carousel-control right-4">
-        <i class="fa fa-chevron-right"></i>
-      </button>-->
+      <!-- 已完全移除左右控制按钮 -->
     </div>
     
     <!-- 视频播放区域 -->
@@ -184,13 +181,11 @@
   </div>
 
   <script>
-    // 轮播核心逻辑（重点优化左右循环滑动）
+    // 轮播核心逻辑（重点强化触摸循环滑动，移除按钮相关代码）
     const carouselTrack = document.getElementById('carouselTrack');
     const carouselItems = document.querySelectorAll('.carousel-item');
     const indicators = document.querySelectorAll('.indicator');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const swipeHint = document.querySelector('.swipe-hint');
+    const swipeHint = document.querySelector('.swipe-hint'); // 仅保留触摸提示，移除按钮变量
 
     let currentIndex = 0;
     const itemCount = carouselItems.length;
@@ -200,157 +195,157 @@
     let prevTranslate = 0;
     let animationID;
 
-    // 初始化轮播（优化无缝循环的克隆项逻辑）
+    // 初始化轮播（优化无缝循环+触摸体验）
     function initCarousel() {
-      // 1. 复制首尾项并标记为克隆项（关键：实现循环时的视觉衔接）
-      const firstClone = carouselItems[0].cloneNode(true); // 复制第一项（用于最后一项向右滑的衔接）
-      const lastClone = carouselItems[itemCount - 1].cloneNode(true); // 复制最后一项（用于第一项向左滑的衔接）
+      // 1. 复制首尾项作为克隆项（核心：实现触摸循环的视觉无缝衔接）
+      const firstClone = carouselItems[0].cloneNode(true); // 复制第一项，用于最后一项向右触摸滑的衔接
+      const lastClone = carouselItems[itemCount - 1].cloneNode(true); // 复制最后一项，用于第一项向左触摸滑的衔接
       firstClone.classList.add('clone');
       lastClone.classList.add('clone');
 
-      // 2. 插入克隆项：最后一项后加第一项克隆，第一项前加最后一项克隆
+      // 2. 插入克隆项：轨道末尾加第一项克隆，轨道开头加最后一项克隆
       carouselTrack.appendChild(firstClone);
       carouselTrack.insertBefore(lastClone, carouselItems[0]);
 
-      // 3. 初始位置设为原第一项（跳过左侧的最后项克隆）
+      // 3. 初始位置设为原第一项（跳过左侧克隆项，避免初始显示空白）
       currentIndex = 1; 
       setPositionByIndex();
       setupEventListeners();
 
-      // 隐藏滑动提示
+      // 优化触摸提示：延长显示时间（从3秒改为5秒），确保用户看到引导
       setTimeout(() => {
         swipeHint.classList.add('opacity-0', 'transition-opacity', 'duration-1000');
         setTimeout(() => swipeHint.style.display = 'none', 1000);
-      }, 3000);
+      }, 5000);
     }
 
-    // 设置轮播位置（优化循环时的索引映射）
+    // 设置轮播位置（确保触摸循环时指示器同步）
     function setPositionByIndex() {
-      // 计算当前需要移动的距离（百分比，每项占100%宽度）
+      // 按百分比计算移动距离（每项占100%宽度，触摸滑动时按比例移动）
       currentTranslate = currentIndex * -100;
       prevTranslate = currentTranslate;
       carouselTrack.style.transform = `translateX(${currentTranslate}%)`;
-      carouselTrack.style.transition = 'transform 0.5s ease-out'; // 保持过渡动画
+      carouselTrack.style.transition = 'transform 0.5s ease-out'; // 触摸结束后平滑过渡
 
-      // 优化指示器同步：映射克隆项索引到原项索引
+      // 映射克隆项索引到原项，同步指示器激活状态
       let targetIndicatorIndex;
       if (currentIndex === 0) {
-        // 当前是左侧克隆项（原最后一项），对应指示器的最后一个
+        // 触摸滑到左侧克隆项（原最后一项）→ 指示器同步最后一个
         targetIndicatorIndex = itemCount - 1;
       } else if (currentIndex === itemCount + 1) {
-        // 当前是右侧克隆项（原第一项），对应指示器的第一个
+        // 触摸滑到右侧克隆项（原第一项）→ 指示器同步第一个
         targetIndicatorIndex = 0;
       } else {
-        // 当前是原项，直接对应（currentIndex-1 因为初始currentIndex=1对应原第一项）
+        // 触摸在原项范围内 → 直接对应原项索引
         targetIndicatorIndex = currentIndex - 1;
       }
-      // 更新指示器激活状态
       indicators.forEach((indicator, i) => {
         indicator.classList.toggle('active', i === targetIndicatorIndex);
       });
     }
 
-    // 处理过渡结束（核心：修复循环时的"跳变"问题）
+    // 过渡结束处理（解决触摸循环的"跳变"问题）
     function handleTransitionEnd() {
-      // 情况1：从原最后一项（currentIndex=itemCount）向右滑到右侧克隆项（currentIndex=itemCount+1）
+      // 情况1：触摸从原最后一项向右滑到右侧克隆项
       if (currentIndex === itemCount + 1) {
-        // 关闭过渡动画，瞬间跳回原第一项（避免用户看到"回跳"）
-        carouselTrack.style.transition = 'none';
-        currentIndex = 1; // 跳回原第一项的位置（对应currentIndex=1）
+        carouselTrack.style.transition = 'none'; // 关闭过渡，避免用户看到"回跳"
+        currentIndex = 1; // 瞬间跳回原第一项，实现"循环"
         setPositionByIndex();
       } 
-      // 情况2：从原第一项（currentIndex=1）向左滑到左侧克隆项（currentIndex=0）
+      // 情况2：触摸从原第一项向左滑到左侧克隆项
       else if (currentIndex === 0) {
         carouselTrack.style.transition = 'none';
-        currentIndex = itemCount; // 跳回原最后一项的位置（对应currentIndex=itemCount）
+        currentIndex = itemCount; // 瞬间跳回原最后一项，实现"循环"
         setPositionByIndex();
       }
     }
 
-    // 切换下一项（兼容手动点击和拖拽）
+    // 切换下一项（触摸滑动触发）
     function nextSlide() {
-      if (isDragging) return; // 拖拽中禁止点击切换
+      if (isDragging) return; // 触摸拖拽中禁止切换，避免冲突
       currentIndex++;
       setPositionByIndex();
     }
 
-    // 切换上一项（兼容手动点击和拖拽）
+    // 切换上一项（触摸滑动触发）
     function prevSlide() {
       if (isDragging) return;
       currentIndex--;
       setPositionByIndex();
     }
 
-    // 滑动事件（优化拖拽体验，确保循环滑动流畅）
+    // 触摸开始（记录初始位置，为滑动计算做准备）
     function touchStart(e) {
-      // 记录初始触摸/鼠标位置
+      // 区分触摸事件（移动端）和鼠标事件（桌面端）
       startX = e.type === 'touchstart' ? e.changedTouches[0].clientX : e.clientX;
       isDragging = true;
-      carouselTrack.style.transition = 'none'; // 拖拽时关闭过渡，避免卡顿
+      carouselTrack.style.transition = 'none'; // 触摸拖拽时关闭过渡，确保实时跟随
       animationID = requestAnimationFrame(animation);
+      swipeHint.classList.add('opacity-0'); // 触摸开始时隐藏提示，避免干扰
     }
 
+    // 触摸移动（实时计算移动距离，更新轮播位置）
     function touchMove(e) {
       if (!isDragging) return;
-      // 计算当前移动距离
       const x = e.type === 'touchmove' ? e.changedTouches[0].clientX : e.clientX;
-      currentTranslate = prevTranslate + (x - startX) / carouselTrack.parentElement.offsetWidth * 100; // 按容器宽度比例计算
+      // 按容器宽度比例计算移动百分比（确保不同屏幕尺寸下滑动灵敏度一致）
+      currentTranslate = prevTranslate + (x - startX) / carouselTrack.parentElement.offsetWidth * 100;
     }
 
+    // 触摸结束（判断是否需要切换项，或回弹到原位置）
     function touchEnd() {
       cancelAnimationFrame(animationID);
       isDragging = false;
-      carouselTrack.style.transition = 'transform 0.5s ease-out'; // 结束拖拽后恢复过渡
+      carouselTrack.style.transition = 'transform 0.5s ease-out'; // 恢复过渡，实现平滑切换
 
-      // 判断是否需要切换项（移动距离超过50px则切换）
+      // 触摸移动距离超过10%容器宽度则切换项，否则回弹
       const movedBy = currentTranslate - prevTranslate;
-      if (movedBy < -10) { // 向左滑动超过10%宽度，切换下一项
+      if (movedBy < -10) { // 向左触摸滑动超过10% → 切换下一项
         nextSlide();
-      } else if (movedBy > 10) { // 向右滑动超过10%宽度，切换上一项
+      } else if (movedBy > 10) { // 向右触摸滑动超过10% → 切换上一项
         prevSlide();
       } else {
-        // 移动距离不足，回弹到原位置
+        // 移动距离不足 → 回弹到原项
         setPositionByIndex();
       }
     }
 
-    // 动画帧（确保拖拽时实时更新位置）
+    // 动画帧（确保触摸拖拽时轮播实时跟随手指/鼠标）
     function animation() {
       carouselTrack.style.transform = `translateX(${currentTranslate}%)`;
       if (isDragging) requestAnimationFrame(animation);
     }
 
-    // 事件监听（整合所有交互方式）
+    // 事件监听（移除按钮相关，强化触摸+鼠标拖拽）
     function setupEventListeners() {
-      // 1. 指示器点击（映射到原项索引）
+      // 1. 指示器点击切换（辅助触摸功能）
       indicators.forEach((indicator, i) => {
         indicator.addEventListener('click', () => {
-          currentIndex = i + 1; // 因为currentIndex=1对应原第一项
+          currentIndex = i + 1; // 映射到原项索引
           setPositionByIndex();
         });
       });
 
-      // 2. 控制按钮点击
-      prevBtn.addEventListener('click', prevSlide);
-      nextBtn.addEventListener('click', nextSlide);
-
-      // 3. 触摸/鼠标拖拽（支持移动端和桌面端）
+      // 2. 触摸事件（移动端核心交互）
       const container = carouselTrack.parentElement;
-      container.addEventListener('touchstart', touchStart);
-      container.addEventListener('touchmove', touchMove);
+      container.addEventListener('touchstart', touchStart, { passive: true }); // passive优化触摸性能
+      container.addEventListener('touchmove', touchMove, { passive: true });
       container.addEventListener('touchend', touchEnd);
+      container.addEventListener('touchcancel', touchEnd); // 处理触摸意外中断（如来电）
+
+      // 3. 鼠标拖拽事件（桌面端兼容，模拟触摸体验）
       container.addEventListener('mousedown', touchStart);
       container.addEventListener('mousemove', touchMove);
       container.addEventListener('mouseup', touchEnd);
       container.addEventListener('mouseleave', touchEnd); // 鼠标移出容器时结束拖拽
 
-      // 4. 键盘左右键控制
+      // 4. 键盘控制（保留桌面端辅助功能）
       document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') prevSlide();
         else if (e.key === 'ArrowRight') nextSlide();
       });
 
-      // 5. 过渡结束事件（关键：处理克隆项切换后的无缝跳变）
+      // 5. 过渡结束事件（确保触摸循环无缝）
       carouselTrack.addEventListener('transitionend', handleTransitionEnd);
     }
 
@@ -359,4 +354,3 @@
   </script>
 </body>
 </html>
-
