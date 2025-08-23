@@ -26,15 +26,15 @@
   
   <style type="text/tailwindcss">
     @layer utilities {
-      /* 轮播核心样式（文件2 图片轮播逻辑） */
+      /* 轮播核心样式（优化循环滑动兼容性） */
       .carousel-container {
         @apply relative w-full overflow-hidden;
       }
       .carousel-track {
-        @apply flex transition-transform duration-500 ease-out;
+        @apply flex transition-transform duration-500 ease-out; /* 保持平滑过渡 */
       }
       .carousel-item {
-        @apply min-w-full relative;
+        @apply min-w-full relative; /* 确保每项占满容器宽度，为循环奠定基础 */
       }
       .carousel-item img {
         @apply w-full h-full object-cover;
@@ -49,7 +49,7 @@
         @apply absolute top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 text-white hover:bg-primary transition-all duration-300 cursor-pointer;
       }
 
-      /* 视频区域样式（文件1 视频布局） */
+      /* 视频区域样式 */
       .video-container {
         @apply relative w-full rounded-xl overflow-hidden shadow-lg bg-dark;
         padding-top: 56.25%; /* 16:9 标准视频比例 */
@@ -58,7 +58,7 @@
         @apply absolute inset-0 w-full h-full object-contain;
       }
 
-      /* 交互提示样式（文件1） */
+      /* 交互提示样式 */
       .swipe-hint {
         @apply absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm flex items-center gap-2 z-10 animate-pulse md:hidden;
       }
@@ -67,11 +67,11 @@
 </head>
 <body class="font-inter bg-gray-100 min-h-screen flex items-center justify-center p-4">
   <div class="container mx-auto px-4 py-8 max-w-7xl">
-    <!-- 轮播容器（文件2 图片轮播逻辑） -->
+    <!-- 轮播容器（优化循环滑动逻辑） -->
     <div class="carousel-container rounded-xl shadow-2xl mb-8" style="max-height: 80vh;">
       <!-- 轮播轨道 -->
       <div id="carouselTrack" class="carousel-track">
-        <!-- 轮播项1（文件1 产品图） -->
+        <!-- 轮播项1 -->
         <div class="carousel-item">
           <img src="https://picsum.photos/id/29/1200/600" alt="产品展示图1" class="w-full h-full object-cover">
           <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
@@ -80,7 +80,7 @@
           </div>
         </div>
         
-        <!-- 轮播项2（文件1 产品图） -->
+        <!-- 轮播项2 -->
         <div class="carousel-item">
           <img src="https://picsum.photos/id/42/1200/600" alt="产品展示图2" class="w-full h-full object-cover">
           <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
@@ -89,7 +89,7 @@
           </div>
         </div>
         
-        <!-- 轮播项3（文件1 产品图） -->
+        <!-- 轮播项3 -->
         <div class="carousel-item">
           <img src="https://picsum.photos/id/65/1200/600" alt="产品展示图3" class="w-full h-full object-cover">
           <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
@@ -98,7 +98,7 @@
           </div>
         </div>
         
-        <!-- 轮播项4（文件1 产品图） -->
+        <!-- 轮播项4 -->
         <div class="carousel-item">
           <img src="https://picsum.photos/id/96/1200/600" alt="产品展示图4" class="w-full h-full object-cover">
           <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
@@ -108,12 +108,12 @@
         </div>
       </div>
       
-      <!-- 滑动提示（文件1） -->
+      <!-- 滑动提示 -->
       <div class="swipe-hint">
         <i class="fa fa-arrows-h"></i> 左右滑动切换
       </div>
       
-      <!-- 指示器（文件2 样式） -->
+      <!-- 指示器 -->
       <div class="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-20">
         <div class="indicator active" data-index="0"></div>
         <div class="indicator" data-index="1"></div>
@@ -121,7 +121,7 @@
         <div class="indicator" data-index="3"></div>
       </div>
       
-      <!-- 控制按钮（文件2 样式） -->
+      <!-- 控制按钮 -->
       <button id="prevBtn" class="carousel-control left-4">
         <i class="fa fa-chevron-left"></i>
       </button>
@@ -130,7 +130,7 @@
       </button>
     </div>
     
-    <!-- 视频播放区域（文件1 视频样式） -->
+    <!-- 视频播放区域 -->
     <section class="mb-8">
       <div class="flex flex-col md:flex-row gap-6">
         <!-- 视频播放器 -->
@@ -184,7 +184,7 @@
   </div>
 
   <script>
-    // 轮播核心逻辑（文件2 交互 + 文件1 无缝循环）
+    // 轮播核心逻辑（重点优化左右循环滑动）
     const carouselTrack = document.getElementById('carouselTrack');
     const carouselItems = document.querySelectorAll('.carousel-item');
     const indicators = document.querySelectorAll('.indicator');
@@ -200,17 +200,20 @@
     let prevTranslate = 0;
     let animationID;
 
-    // 初始化轮播（文件1 无缝循环逻辑）
+    // 初始化轮播（优化无缝循环的克隆项逻辑）
     function initCarousel() {
-      // 复制首尾项实现无缝循环
-      const firstClone = carouselItems[0].cloneNode(true);
-      const lastClone = carouselItems[itemCount - 1].cloneNode(true);
+      // 1. 复制首尾项并标记为克隆项（关键：实现循环时的视觉衔接）
+      const firstClone = carouselItems[0].cloneNode(true); // 复制第一项（用于最后一项向右滑的衔接）
+      const lastClone = carouselItems[itemCount - 1].cloneNode(true); // 复制最后一项（用于第一项向左滑的衔接）
       firstClone.classList.add('clone');
       lastClone.classList.add('clone');
+
+      // 2. 插入克隆项：最后一项后加第一项克隆，第一项前加最后一项克隆
       carouselTrack.appendChild(firstClone);
       carouselTrack.insertBefore(lastClone, carouselItems[0]);
 
-      currentIndex = 1;
+      // 3. 初始位置设为原第一项（跳过左侧的最后项克隆）
+      currentIndex = 1; 
       setPositionByIndex();
       setupEventListeners();
 
@@ -221,112 +224,137 @@
       }, 3000);
     }
 
-    // 设置轮播位置（文件1 逻辑）
+    // 设置轮播位置（优化循环时的索引映射）
     function setPositionByIndex() {
+      // 计算当前需要移动的距离（百分比，每项占100%宽度）
       currentTranslate = currentIndex * -100;
       prevTranslate = currentTranslate;
       carouselTrack.style.transform = `translateX(${currentTranslate}%)`;
-      carouselTrack.style.transition = 'transform 0.5s ease-out';
+      carouselTrack.style.transition = 'transform 0.5s ease-out'; // 保持过渡动画
 
-      // 更新指示器（文件2 样式）
+      // 优化指示器同步：映射克隆项索引到原项索引
+      let targetIndicatorIndex;
+      if (currentIndex === 0) {
+        // 当前是左侧克隆项（原最后一项），对应指示器的最后一个
+        targetIndicatorIndex = itemCount - 1;
+      } else if (currentIndex === itemCount + 1) {
+        // 当前是右侧克隆项（原第一项），对应指示器的第一个
+        targetIndicatorIndex = 0;
+      } else {
+        // 当前是原项，直接对应（currentIndex-1 因为初始currentIndex=1对应原第一项）
+        targetIndicatorIndex = currentIndex - 1;
+      }
+      // 更新指示器激活状态
       indicators.forEach((indicator, i) => {
-        const targetIndex = currentIndex === 0 
-          ? itemCount - 1 
-          : currentIndex === itemCount + 1 
-            ? 0 
-            : currentIndex - 1;
-        indicator.classList.toggle('active', i === targetIndex);
+        indicator.classList.toggle('active', i === targetIndicatorIndex);
       });
     }
 
-    // 处理过渡结束（文件1 无缝循环）
+    // 处理过渡结束（核心：修复循环时的"跳变"问题）
     function handleTransitionEnd() {
+      // 情况1：从原最后一项（currentIndex=itemCount）向右滑到右侧克隆项（currentIndex=itemCount+1）
       if (currentIndex === itemCount + 1) {
+        // 关闭过渡动画，瞬间跳回原第一项（避免用户看到"回跳"）
         carouselTrack.style.transition = 'none';
-        currentIndex = 1;
+        currentIndex = 1; // 跳回原第一项的位置（对应currentIndex=1）
         setPositionByIndex();
-      } else if (currentIndex === 0) {
+      } 
+      // 情况2：从原第一项（currentIndex=1）向左滑到左侧克隆项（currentIndex=0）
+      else if (currentIndex === 0) {
         carouselTrack.style.transition = 'none';
-        currentIndex = itemCount;
+        currentIndex = itemCount; // 跳回原最后一项的位置（对应currentIndex=itemCount）
         setPositionByIndex();
       }
     }
 
-    // 切换下一项（文件2 + 文件1 整合）
+    // 切换下一项（兼容手动点击和拖拽）
     function nextSlide() {
-      if (isDragging) return;
+      if (isDragging) return; // 拖拽中禁止点击切换
       currentIndex++;
       setPositionByIndex();
     }
 
-    // 切换上一项（文件2 + 文件1 整合）
+    // 切换上一项（兼容手动点击和拖拽）
     function prevSlide() {
       if (isDragging) return;
       currentIndex--;
       setPositionByIndex();
     }
 
-    // 滑动事件（文件1 逻辑）
+    // 滑动事件（优化拖拽体验，确保循环滑动流畅）
     function touchStart(e) {
+      // 记录初始触摸/鼠标位置
       startX = e.type === 'touchstart' ? e.changedTouches[0].clientX : e.clientX;
       isDragging = true;
-      carouselTrack.style.transition = 'none';
+      carouselTrack.style.transition = 'none'; // 拖拽时关闭过渡，避免卡顿
       animationID = requestAnimationFrame(animation);
     }
 
     function touchMove(e) {
       if (!isDragging) return;
+      // 计算当前移动距离
       const x = e.type === 'touchmove' ? e.changedTouches[0].clientX : e.clientX;
-      currentTranslate = prevTranslate + (x - startX);
+      currentTranslate = prevTranslate + (x - startX) / carouselTrack.parentElement.offsetWidth * 100; // 按容器宽度比例计算
     }
 
     function touchEnd() {
       cancelAnimationFrame(animationID);
       isDragging = false;
-      carouselTrack.style.transition = 'transform 0.5s ease-out';
+      carouselTrack.style.transition = 'transform 0.5s ease-out'; // 结束拖拽后恢复过渡
+
+      // 判断是否需要切换项（移动距离超过50px则切换）
       const movedBy = currentTranslate - prevTranslate;
-      if (movedBy < -50) nextSlide();
-      else if (movedBy > 50) prevSlide();
-      else setPositionByIndex();
+      if (movedBy < -10) { // 向左滑动超过10%宽度，切换下一项
+        nextSlide();
+      } else if (movedBy > 10) { // 向右滑动超过10%宽度，切换上一项
+        prevSlide();
+      } else {
+        // 移动距离不足，回弹到原位置
+        setPositionByIndex();
+      }
     }
 
-    // 动画帧（文件1 逻辑）
+    // 动画帧（确保拖拽时实时更新位置）
     function animation() {
       carouselTrack.style.transform = `translateX(${currentTranslate}%)`;
       if (isDragging) requestAnimationFrame(animation);
     }
 
-    // 事件监听（整合文件1 + 文件2）
+    // 事件监听（整合所有交互方式）
     function setupEventListeners() {
-      // 指示器点击（文件2 逻辑）
+      // 1. 指示器点击（映射到原项索引）
       indicators.forEach((indicator, i) => {
         indicator.addEventListener('click', () => {
-          currentIndex = i + 1; // 适配无缝循环的克隆项
+          currentIndex = i + 1; // 因为currentIndex=1对应原第一项
           setPositionByIndex();
         });
       });
 
-      // 控制按钮点击（文件2 逻辑）
+      // 2. 控制按钮点击
       prevBtn.addEventListener('click', prevSlide);
       nextBtn.addEventListener('click', nextSlide);
 
-      // 触摸/鼠标拖拽（文件1 逻辑）
-      carouselTrack.parentElement.addEventListener('touchstart', touchStart);
-      carouselTrack.parentElement.addEventListener('touchmove', touchMove);
-      carouselTrack.parentElement.addEventListener('touchend', touchEnd);
-      carouselTrack.parentElement.addEventListener('mousedown', touchStart);
-      carouselTrack.parentElement.addEventListener('mousemove', touchMove);
-      carouselTrack.parentElement.addEventListener('mouseup', touchEnd);
-      carouselTrack.parentElement.addEventListener('mouseleave', touchEnd);
+      // 3. 触摸/鼠标拖拽（支持移动端和桌面端）
+      const container = carouselTrack.parentElement;
+      container.addEventListener('touchstart', touchStart);
+      container.addEventListener('touchmove', touchMove);
+      container.addEventListener('touchend', touchEnd);
+      container.addEventListener('mousedown', touchStart);
+      container.addEventListener('mousemove', touchMove);
+      container.addEventListener('mouseup', touchEnd);
+      container.addEventListener('mouseleave', touchEnd); // 鼠标移出容器时结束拖拽
 
-      // 键盘控制（文件1 逻辑）
+      // 4. 键盘左右键控制
       document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') prevSlide();
         else if (e.key === 'ArrowRight') nextSlide();
       });
+
+      // 5. 过渡结束事件（关键：处理克隆项切换后的无缝跳变）
+      carouselTrack.addEventListener('transitionend', handleTransitionEnd);
     }
 
-    // 初始化
+    // 页面加载完成后初始化轮播
     window.addEventListener('DOMContentLoaded', initCarousel);
   </script>
 </body>
