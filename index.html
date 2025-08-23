@@ -16,6 +16,9 @@
             secondary: '#1E40AF',
             dark: '#1E293B',
           },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
         },
       }
     }
@@ -23,7 +26,7 @@
   
   <style type="text/tailwindcss">
     @layer utilities {
-      /* 轮播核心样式 */
+      /* 轮播核心样式（文件2 图片轮播逻辑） */
       .carousel-container {
         @apply relative w-full overflow-hidden;
       }
@@ -33,101 +36,111 @@
       .carousel-item {
         @apply min-w-full relative;
       }
-      
-      /* 指示器样式 */
-      .carousel-indicator {
-        @apply w-6 h-1 bg-white/40 cursor-pointer transition-all duration-300;
+      .carousel-item img {
+        @apply w-full h-full object-cover;
       }
-      .carousel-indicator.active {
-        @apply bg-white h-1.5;
+      .indicator {
+        @apply w-8 h-2 rounded-full transition-all duration-300 bg-white/50 cursor-pointer;
       }
-      
-      /* 视频区域样式 */
+      .indicator.active {
+        @apply bg-primary w-12;
+      }
+      .carousel-control {
+        @apply absolute top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 text-white hover:bg-primary transition-all duration-300 cursor-pointer;
+      }
+
+      /* 视频区域样式（文件1 视频布局） */
       .video-container {
         @apply relative w-full rounded-xl overflow-hidden shadow-lg bg-dark;
         padding-top: 56.25%; /* 16:9 标准视频比例 */
       }
-      
-      /* 交互提示样式 */
+      .video-container video {
+        @apply absolute inset-0 w-full h-full object-contain;
+      }
+
+      /* 交互提示样式（文件1） */
       .swipe-hint {
         @apply absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm flex items-center gap-2 z-10 animate-pulse md:hidden;
       }
     }
   </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="font-inter bg-gray-100 min-h-screen flex items-center justify-center p-4">
   <div class="container mx-auto px-4 py-8 max-w-7xl">
-    <header class="mb-8 text-center">
-      <!-- <h1 class="text-[clamp(1.8rem,4vw,2.8rem)] font-bold text-gray-800 mb-2">循环滑动轮播与视频展示</h1>
-      <p class="text-gray-600 text-lg">支持无限循环滑动，可自定义视频内容</p>
-    </header>
-    
-    轮播容器 -->
+    <!-- 轮播容器（文件2 图片轮播逻辑） -->
     <div class="carousel-container rounded-xl shadow-2xl mb-8" style="max-height: 80vh;">
       <!-- 轮播轨道 -->
       <div id="carouselTrack" class="carousel-track">
-        <!-- 轮播项1 -->
+        <!-- 轮播项1（文件1 产品图） -->
         <div class="carousel-item">
-          <img src="images/1.jpg" alt="山脉湖泊自然风景" class="w-full h-full object-cover">
+          <img src="images/1.jpg" alt="产品展示图1" class="w-full h-full object-cover">
           <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
-            <!-- <h2 class="text-2xl md:text-3xl font-bold mb-2">壮丽山川</h2> -->
+            <h2 class="text-2xl md:text-3xl font-bold mb-2">能量转移型主动均衡板</h2>
+            <p>高效电池管理解决方案</p>
           </div>
         </div>
         
-        <!-- 轮播项2 -->
+        <!-- 轮播项2（文件1 产品图） -->
         <div class="carousel-item">
-          <img src="images/2.jpg" alt="云雾缭绕的山脉景观" class="w-full h-full object-cover">
+          <img src="images/2.jpg" alt="产品展示图2" class="w-full h-full object-cover">
           <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
-            <!-- <h2 class="text-2xl md:text-3xl font-bold mb-2">云海仙境</h2> -->
+            <h2 class="text-2xl md:text-3xl font-bold mb-2">智能电池管理系统</h2>
+            <p>延长电池寿命，提升使用效率</p>
           </div>
         </div>
         
-        <!-- 轮播项3 -->
+        <!-- 轮播项3（文件1 产品图） -->
         <div class="carousel-item">
-          <img src="images/3.jpg" alt="雪山风景" class="w-full h-full object-cover">
+          <img src="images/3.jpg" alt="产品展示图3" class="w-full h-full object-cover">
           <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
-           <!--  <h2 class="text-2xl md:text-3xl font-bold mb-2">雪域高原</h2> -->
+            <h2 class="text-2xl md:text-3xl font-bold mb-2">多规格适配设计</h2>
+            <p>满足不同场景的电池需求</p>
           </div>
         </div>
         
-        <!-- 轮播项4 -->
+        <!-- 轮播项4（文件1 产品图） -->
         <div class="carousel-item">
-          <img src="images/1.jpg" alt="山间瀑布景观" class="w-full h-full object-cover">
+          <img src="images/1.jpg" alt="产品展示图4" class="w-full h-full object-cover">
           <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
-           <!--  <h2 class="text-2xl md:text-3xl font-bold mb-2">飞瀑流泉</h2> -->
+            <h2 class="text-2xl md:text-3xl font-bold mb-2">精密控制技术</h2>
+            <p>稳定可靠的性能表现</p>
           </div>
         </div>
       </div>
       
-      <!-- 滑动提示（仅移动设备显示） -->
+      <!-- 滑动提示（文件1） -->
       <div class="swipe-hint">
         <i class="fa fa-arrows-h"></i> 左右滑动切换
       </div>
       
-      <!-- 指示器 -->
+      <!-- 指示器（文件2 样式） -->
       <div class="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-20">
-        <button class="carousel-indicator active" data-index="0"></button>
-        <button class="carousel-indicator" data-index="1"></button>
-        <button class="carousel-indicator" data-index="2"></button>
-        <button class="carousel-indicator" data-index="3"></button>
+        <div class="indicator active" data-index="0"></div>
+        <div class="indicator" data-index="1"></div>
+        <div class="indicator" data-index="2"></div>
+        <div class="indicator" data-index="3"></div>
       </div>
+      
+      <!-- 控制按钮（文件2 样式） 
+      <button id="prevBtn" class="carousel-control left-4">
+        <i class="fa fa-chevron-left"></i>
+      </button>
+      <button id="nextBtn" class="carousel-control right-4">
+        <i class="fa fa-chevron-right"></i>
+      </button>-->
     </div>
     
-    <!-- 视频播放区域 -->
+    <!-- 视频播放区域（文件1 视频样式） -->
     <section class="mb-8">
       <div class="flex flex-col md:flex-row gap-6">
-        <!-- 视频播放器 - 可自定义视频文件 -->
+        <!-- 视频播放器 -->
         <div class="w-full md:w-2/3">
           <div class="video-container">
-            <!-- 自定义视频播放器 -->
             <video 
-              class="absolute inset-0 w-full h-full object-contain"
               controls
-              poster="images/3.jpg"   视频封面图 -->
+              poster="images/3.jpg"
               preload="metadata">
-              <!-- 替换为你的视频文件 -->
               <source src="your-video-file.mp4" type="video/mp4">
-              <!-- 可以添加其他格式作为备用 -->
               <source src="your-video-file.webm" type="video/webm">
               您的浏览器不支持视频播放
            </video>
@@ -153,9 +166,17 @@
               <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
               <span>适用   24-48伏  24-60伏  24-72伏</span>
             </li>
+            <li class="flex items-start">
+              <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+              <span>智能温控保护系统</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+              <span>高效能量转换技术</span>
+            </li>
           </ul>
           <!--<button class="bg-primary hover:bg-secondary text-white py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50">
-            查看更多视频
+            查看详细规格
           </button>-->
         </div>
       </div>
@@ -163,203 +184,150 @@
   </div>
 
   <script>
-    // 获取DOM元素
+    // 轮播核心逻辑（文件2 交互 + 文件1 无缝循环）
     const carouselTrack = document.getElementById('carouselTrack');
-    const items = document.querySelectorAll('.carousel-item');
-    const indicators = document.querySelectorAll('.carousel-indicator');
+    const carouselItems = document.querySelectorAll('.carousel-item');
+    const indicators = document.querySelectorAll('.indicator');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
     const swipeHint = document.querySelector('.swipe-hint');
-    
-    // 轮播配置参数
+
     let currentIndex = 0;
-    let startX;          // 滑动起始位置
-    let currentTranslate = 0; // 当前位移
-    let prevTranslate = 0;    // 上一位移
+    const itemCount = carouselItems.length;
+    let isDragging = false;
+    let startX;
+    let currentTranslate = 0;
+    let prevTranslate = 0;
     let animationID;
-    let isDragging = false;   // 是否正在拖拽
-    const itemCount = items.length;
-    
-    // 初始化轮播 - 复制首尾项用于实现无缝循环
+
+    // 初始化轮播（文件1 无缝循环逻辑）
     function initCarousel() {
-      // 复制第一个元素到最后
-      const firstClone = items[0].cloneNode(true);
+      // 复制首尾项实现无缝循环
+      const firstClone = carouselItems[0].cloneNode(true);
+      const lastClone = carouselItems[itemCount - 1].cloneNode(true);
       firstClone.classList.add('clone');
-      // 复制最后一个元素到最前
-      const lastClone = items[itemCount - 1].cloneNode(true);
       lastClone.classList.add('clone');
-      
-      // 添加复制的元素
       carouselTrack.appendChild(firstClone);
-      carouselTrack.insertBefore(lastClone, items[0]);
-      
-      // 初始位置设置在第一个真实元素
+      carouselTrack.insertBefore(lastClone, carouselItems[0]);
+
       currentIndex = 1;
       setPositionByIndex();
       setupEventListeners();
-      
-      // 3秒后隐藏滑动提示
+
+      // 隐藏滑动提示
       setTimeout(() => {
-        if (swipeHint) {
-          swipeHint.classList.add('opacity-0', 'transition-opacity', 'duration-1000');
-          setTimeout(() => swipeHint.style.display = 'none', 1000);
-        }
+        swipeHint.classList.add('opacity-0', 'transition-opacity', 'duration-1000');
+        setTimeout(() => swipeHint.style.display = 'none', 1000);
       }, 3000);
     }
-    
-    // 根据索引设置轮播位置
+
+    // 设置轮播位置（文件1 逻辑）
     function setPositionByIndex() {
       currentTranslate = currentIndex * -100;
       prevTranslate = currentTranslate;
       carouselTrack.style.transform = `translateX(${currentTranslate}%)`;
       carouselTrack.style.transition = 'transform 0.5s ease-out';
-      
-      // 更新指示器状态 (校正克隆元素的索引)
-      const indicatorIndex = currentIndex === 0 
-        ? itemCount - 1 
-        : currentIndex === itemCount + 1 
-          ? 0 
-          : currentIndex - 1;
-      
+
+      // 更新指示器（文件2 样式）
       indicators.forEach((indicator, i) => {
-        indicator.classList.toggle('active', i === indicatorIndex);
+        const targetIndex = currentIndex === 0 
+          ? itemCount - 1 
+          : currentIndex === itemCount + 1 
+            ? 0 
+            : currentIndex - 1;
+        indicator.classList.toggle('active', i === targetIndex);
       });
     }
-    
-    // 处理循环逻辑的位置更新
+
+    // 处理过渡结束（文件1 无缝循环）
     function handleTransitionEnd() {
-      // 当到达最后一个克隆元素(第一个元素的克隆)
       if (currentIndex === itemCount + 1) {
         carouselTrack.style.transition = 'none';
         currentIndex = 1;
         setPositionByIndex();
-      }
-      
-      // 当到达第一个克隆元素(最后一个元素的克隆)
-      if (currentIndex === 0) {
+      } else if (currentIndex === 0) {
         carouselTrack.style.transition = 'none';
         currentIndex = itemCount;
         setPositionByIndex();
       }
     }
-    
-    // 切换到下一张
+
+    // 切换下一项（文件2 + 文件1 整合）
     function nextSlide() {
       if (isDragging) return;
       currentIndex++;
       setPositionByIndex();
     }
-    
-    // 切换到上一张
+
+    // 切换上一项（文件2 + 文件1 整合）
     function prevSlide() {
       if (isDragging) return;
       currentIndex--;
       setPositionByIndex();
     }
-    
-    // 滑动事件处理
-    function touchStart(x) {
-      startX = x;
+
+    // 滑动事件（文件1 逻辑）
+    function touchStart(e) {
+      startX = e.type === 'touchstart' ? e.changedTouches[0].clientX : e.clientX;
       isDragging = true;
-      carouselTrack.style.transition = 'none'; // 拖拽时禁用过渡动画
+      carouselTrack.style.transition = 'none';
       animationID = requestAnimationFrame(animation);
     }
-    
-    function touchMove(x) {
+
+    function touchMove(e) {
       if (!isDragging) return;
-      const currentPosition = x - startX;
-      currentTranslate = prevTranslate + currentPosition;
+      const x = e.type === 'touchmove' ? e.changedTouches[0].clientX : e.clientX;
+      currentTranslate = prevTranslate + (x - startX);
     }
-    
+
     function touchEnd() {
       cancelAnimationFrame(animationID);
       isDragging = false;
-      carouselTrack.style.transition = 'transform 0.5s ease-out'; // 恢复过渡动画
-      
-      // 计算滑动距离，判断是否切换图片
+      carouselTrack.style.transition = 'transform 0.5s ease-out';
       const movedBy = currentTranslate - prevTranslate;
-      
-      // 向左滑动超过阈值
-      if (movedBy < -50) {
-        nextSlide();
-      } 
-      // 向右滑动超过阈值
-      else if (movedBy > 50) {
-        prevSlide();
-      } 
-      // 滑动不足，回弹
-      else {
-        setPositionByIndex();
-      }
+      if (movedBy < -50) nextSlide();
+      else if (movedBy > 50) prevSlide();
+      else setPositionByIndex();
     }
-    
-    // 动画帧更新
+
+    // 动画帧（文件1 逻辑）
     function animation() {
       carouselTrack.style.transform = `translateX(${currentTranslate}%)`;
       if (isDragging) requestAnimationFrame(animation);
     }
-    
-    // 事件监听设置
+
+    // 事件监听（整合文件1 + 文件2）
     function setupEventListeners() {
-      // 指示器点击
-      indicators.forEach((indicator, index) => {
+      // 指示器点击（文件2 逻辑）
+      indicators.forEach((indicator, i) => {
         indicator.addEventListener('click', () => {
-          currentIndex = index + 1; // 校正克隆元素的索引
+          currentIndex = i + 1; // 适配无缝循环的克隆项
           setPositionByIndex();
         });
       });
-      
-      // 过渡结束事件 - 用于实现无缝循环
-      carouselTrack.addEventListener('transitionend', handleTransitionEnd);
-      
-      // 触摸滑动（移动设备）
-      carouselTrack.parentElement.addEventListener('touchstart', (e) => {
-        touchStart(e.changedTouches[0].clientX);
-      }, false);
-      
-      carouselTrack.parentElement.addEventListener('touchmove', (e) => {
-        touchMove(e.changedTouches[0].clientX);
-      }, false);
-      
-      carouselTrack.parentElement.addEventListener('touchend', () => {
-        touchEnd();
-      }, false);
-      
-      // 鼠标拖拽（桌面设备）
-      carouselTrack.parentElement.addEventListener('mousedown', (e) => {
-        touchStart(e.clientX);
-      }, false);
-      
-      carouselTrack.parentElement.addEventListener('mousemove', (e) => {
-        if (isDragging) touchMove(e.clientX);
-      }, false);
-      
-      carouselTrack.parentElement.addEventListener('mouseup', () => {
-        touchEnd();
-      }, false);
-      
-      carouselTrack.parentElement.addEventListener('mouseleave', () => {
-        if (isDragging) {
-          touchEnd();
-        }
-      }, false);
-      
-      // 键盘控制
+
+      // 控制按钮点击（文件2 逻辑）
+      prevBtn.addEventListener('click', prevSlide);
+      nextBtn.addEventListener('click', nextSlide);
+
+      // 触摸/鼠标拖拽（文件1 逻辑）
+      carouselTrack.parentElement.addEventListener('touchstart', touchStart);
+      carouselTrack.parentElement.addEventListener('touchmove', touchMove);
+      carouselTrack.parentElement.addEventListener('touchend', touchEnd);
+      carouselTrack.parentElement.addEventListener('mousedown', touchStart);
+      carouselTrack.parentElement.addEventListener('mousemove', touchMove);
+      carouselTrack.parentElement.addEventListener('mouseup', touchEnd);
+      carouselTrack.parentElement.addEventListener('mouseleave', touchEnd);
+
+      // 键盘控制（文件1 逻辑）
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') {
-          prevSlide();
-        } else if (e.key === 'ArrowRight') {
-          nextSlide();
-        }
+        if (e.key === 'ArrowLeft') prevSlide();
+        else if (e.key === 'ArrowRight') nextSlide();
       });
     }
-    
-    // 页面加载完成后初始化
+
+    // 初始化
     window.addEventListener('DOMContentLoaded', initCarousel);
   </script>
 </body>
 </html>
-
-    
-
-
-
-
